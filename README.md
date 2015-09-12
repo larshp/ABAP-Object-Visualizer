@@ -18,3 +18,5 @@ Install via [abapGit](https://github.com/larshp/abapGit)
 7. Paste clipboard to http://www.webgraphviz.com/ and click "Generate Graph!"
 
 Alternatively graphviz can be installed locally: http://portableapps.com/node/38245
+
+![image](https://cloud.githubusercontent.com/assets/5888506/9831830/9992cd50-5966-11e5-9ee5-383ad590a683.png)
