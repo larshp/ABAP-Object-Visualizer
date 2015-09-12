@@ -52,6 +52,18 @@
    <LENGTH>42 </LENGTH>
   </TEXTPOOL>
   <TEXTPOOL>
+   <ID>I</ID>
+   <KEY>004</KEY>
+   <ENTRY>Structure</ENTRY>
+   <LENGTH>19 </LENGTH>
+  </TEXTPOOL>
+  <TEXTPOOL>
+   <ID>I</ID>
+   <KEY>005</KEY>
+   <ENTRY>Choose object</ENTRY>
+   <LENGTH>23 </LENGTH>
+  </TEXTPOOL>
+  <TEXTPOOL>
    <ID>R</ID>
    <KEY></KEY>
    <ENTRY>ABAP Object Visualizer</ENTRY>

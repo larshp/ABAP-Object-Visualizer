@@ -62,6 +62,8 @@ CLASS lcl_debugger_script DEFINITION
     DATA: mv_graph TYPE string.
 
     METHODS:
+      popup
+        RETURNING VALUE(rv_name) TYPE string,
       to_clipboard,
       name
         IMPORTING iv_name        TYPE string
@@ -81,6 +83,14 @@ CLASS lcl_debugger_script DEFINITION
         IMPORTING iv_name  TYPE string
                   io_descr TYPE REF TO cl_tpda_script_data_descr
         RAISING   cx_tpda,
+      handle_simple
+        IMPORTING iv_name  TYPE string
+                  io_descr TYPE REF TO cl_tpda_script_data_descr
+        RAISING   cx_tpda,
+      handle_struct
+        IMPORTING iv_name  TYPE string
+                  io_descr TYPE REF TO cl_tpda_script_data_descr
+        RAISING   cx_tpda,
       handle
         IMPORTING iv_name TYPE string
         RAISING   cx_tpda.
@@ -93,6 +103,92 @@ ENDCLASS.                    "lcl_debugger_script DEFINITION
 *
 *---------------------------------------------------------------------*
 CLASS lcl_debugger_script IMPLEMENTATION.
+
+  METHOD popup.
+
+    DATA: lv_returncode TYPE c,
+          lt_fields     TYPE TABLE OF sval.
+
+    FIELD-SYMBOLS: <ls_field> LIKE LINE OF lt_fields.
+
+
+    APPEND INITIAL LINE TO lt_fields ASSIGNING <ls_field>.
+    <ls_field>-tabname = 'ABAPTXT255'.
+    <ls_field>-fieldname = 'LINE'.
+    <ls_field>-fieldtext = 'Object'(002).
+    <ls_field>-field_obl = abap_true.
+    <ls_field>-value     = 'GO_CLASS'.
+
+    CALL FUNCTION 'POPUP_GET_VALUES'
+      EXPORTING
+        popup_title     = 'Choose object'(005)
+      IMPORTING
+        returncode      = lv_returncode
+      TABLES
+        fields          = lt_fields
+      EXCEPTIONS
+        error_in_fields = 1
+        OTHERS          = 2.
+    IF sy-subrc <> 0 OR lv_returncode = 'A'.
+      RETURN.
+    ENDIF.
+
+    READ TABLE lt_fields INDEX 1 ASSIGNING <ls_field>.
+    ASSERT sy-subrc = 0.
+
+    rv_name = <ls_field>-value.
+
+  ENDMETHOD.
+
+  METHOD handle_simple.
+
+    DATA: lo_elem  TYPE REF TO cl_tpda_script_elemdescr,
+          lv_value TYPE string.
+
+
+    lo_elem ?= io_descr.
+    lv_value = lo_elem->value( ).
+
+    REPLACE ALL OCCURRENCES OF c_newline IN lv_value WITH space.
+
+    mv_graph = |{ mv_graph }"{ name( iv_name ) }" [{ c_newline
+      }label = "{ lv_value }"{ c_newline
+      }shape = "record" ];{ c_newline }|.
+
+  ENDMETHOD.
+
+  METHOD handle_struct.
+
+    DATA: lv_label      TYPE string,
+          lv_edges      TYPE string,
+          lv_name       TYPE string,
+          lt_components TYPE tpda_script_struc_componentsit,
+          lo_struct     TYPE REF TO cl_tpda_script_structdescr.
+
+    FIELD-SYMBOLS: <ls_component> LIKE LINE OF lt_components.
+
+
+    lo_struct ?= io_descr.
+
+    lo_struct->components( IMPORTING p_components_it = lt_components ).
+
+    lv_label = 'Structure'(004).
+    LOOP AT lt_components ASSIGNING <ls_component>.
+      lv_label = |{ lv_label } \|<f{ sy-tabix }> {
+        name( <ls_component>-compname ) }\\{ c_newline }|.
+      CONCATENATE iv_name '-' <ls_component>-compname INTO lv_name.
+      lv_edges = |{ lv_edges }"{ name( iv_name ) }":<f{ sy-tabix
+        }> -> "{ name( lv_name ) }";{ c_newline }|.
+
+      handle( lv_name ).
+    ENDLOOP.
+
+    mv_graph = |{ mv_graph }"{ name( iv_name ) }" [{ c_newline
+      }label = "{ lv_label }"{ c_newline
+      }shape = "record" ];{ c_newline
+      }{ lv_edges }|.
+
+  ENDMETHOD.
 
   METHOD name.
 
@@ -115,7 +211,7 @@ CLASS lcl_debugger_script IMPLEMENTATION.
     DO lo_table->linecnt( ) TIMES.
       lv_name = |{ iv_name }[{ sy-index }]|.
 
-      lv_label = |{ lv_label } \|<f{ sy-index }> { sy-index }|.
+      lv_label = |{ lv_label } \|<f{ sy-index }> { sy-index }\\{ c_newline }|.
       lv_edges = |{ lv_edges }"{ name( iv_name ) }":<f{ sy-index
         }> -> "{ name( lv_name ) }";{ c_newline }|.
 
@@ -145,7 +241,8 @@ CLASS lcl_debugger_script IMPLEMENTATION.
 
     lv_label = 'Object'(002).
     LOOP AT lt_attributes ASSIGNING <ls_attribute>.
-      lv_label = |{ lv_label } \|<f{ sy-tabix }> { name( <ls_attribute>-name ) }|.
+      lv_label = |{ lv_label } \|<f{ sy-tabix }> {
+        name( <ls_attribute>-name ) }\\{ c_newline }|.
       CONCATENATE iv_name '-' <ls_attribute>-name INTO lv_name.
       lv_edges = |{ lv_edges }"{ name( iv_name ) }":<f{ sy-tabix
         }> -> "{ name( lv_name ) }";{ c_newline }|.
@@ -171,7 +268,9 @@ CLASS lcl_debugger_script IMPLEMENTATION.
     ls_info = cl_tpda_script_data_descr=>get_quick_info( iv_name ).
 
     ASSIGN ls_info-quickdata->* TO <ls_symobjref>.
-    handle( <ls_symobjref>-instancename ).
+    IF <ls_symobjref>-instancename <> '{O:initial}'.
+      handle( <ls_symobjref>-instancename ).
+    ENDIF.
 
     IF iv_name CA '{'.
       lv_label = 'ref'.
@@ -206,11 +305,16 @@ CLASS lcl_debugger_script IMPLEMENTATION.
 
   METHOD script.
 
-    DATA: lx_tpda TYPE REF TO cx_tpda.
+    DATA: lv_name TYPE string,
+          lx_tpda TYPE REF TO cx_tpda.
 
 
     TRY.
-        handle( 'GO_CLASS' ).
+        lv_name = popup( ).
+        IF lv_name IS INITIAL.
+          RETURN.
+        ENDIF.
+        handle( lv_name ).
         mv_graph = |digraph g \{{ c_newline
           }graph [{ c_newline
           }rankdir = "LR"{ c_newline
@@ -235,9 +339,11 @@ CLASS lcl_debugger_script IMPLEMENTATION.
 
     CASE ls_info-metatype.
       WHEN cl_tpda_script_data_descr=>mt_simple.
-        BREAK-POINT.
+        handle_simple( iv_name  = iv_name
+                       io_descr = lo_descr ).
       WHEN cl_tpda_script_data_descr=>mt_struct.
-        BREAK-POINT.
+        handle_struct( iv_name  = iv_name
+                       io_descr = lo_descr ).
       WHEN cl_tpda_script_data_descr=>mt_string.
         handle_string( iv_name  = iv_name
                        io_descr = lo_descr ).
@@ -245,7 +351,8 @@ CLASS lcl_debugger_script IMPLEMENTATION.
         handle_tab( iv_name  = iv_name
                     io_descr = lo_descr ).
       WHEN cl_tpda_script_data_descr=>mt_datref.
-        BREAK-POINT.
+* to be implemented
+        ASSERT 1 = 1 + 1.
       WHEN cl_tpda_script_data_descr=>mt_object.
         handle_object( iv_name  = iv_name
                        io_descr = lo_descr ).
