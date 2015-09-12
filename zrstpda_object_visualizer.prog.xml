@@ -34,10 +34,28 @@
  </PROGDIR>
  <TEXTPOOL_TABLE>
   <TEXTPOOL>
+   <ID>I</ID>
+   <KEY>001</KEY>
+   <ENTRY>Table</ENTRY>
+   <LENGTH>15 </LENGTH>
+  </TEXTPOOL>
+  <TEXTPOOL>
+   <ID>I</ID>
+   <KEY>002</KEY>
+   <ENTRY>Object</ENTRY>
+   <LENGTH>16 </LENGTH>
+  </TEXTPOOL>
+  <TEXTPOOL>
+   <ID>I</ID>
+   <KEY>003</KEY>
+   <ENTRY>Exported to clipboard</ENTRY>
+   <LENGTH>42 </LENGTH>
+  </TEXTPOOL>
+  <TEXTPOOL>
    <ID>R</ID>
    <KEY></KEY>
-   <ENTRY>Debugger Skript: Default Template</ENTRY>
-   <LENGTH>33 </LENGTH>
+   <ENTRY>ABAP Object Visualizer</ENTRY>
+   <LENGTH>22 </LENGTH>
   </TEXTPOOL>
  </TEXTPOOL_TABLE>
 </abapGit>
