@@ -1,6 +1,6 @@
 # ABAP-Object-Visualizer
 
-Visualize complex object hierachies in ABAP via [graphviz](http://www.graphviz.org/)
+Visualize complex object hierarchies in ABAP via [graphviz](http://www.graphviz.org/)
 
 ### Limitations
 Does not work if the data contains cyclic references
