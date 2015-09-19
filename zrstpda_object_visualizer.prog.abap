@@ -138,6 +138,7 @@ CLASS lcl_debugger_script IMPLEMENTATION.
     ASSERT sy-subrc = 0.
 
     rv_name = <ls_field>-value.
+    TRANSLATE rv_name TO UPPER CASE.
 
   ENDMETHOD.
 
@@ -231,7 +232,9 @@ CLASS lcl_debugger_script IMPLEMENTATION.
     DATA:  lo_object     TYPE REF TO cl_tpda_script_objectdescr,
            lv_name       TYPE string,
            lv_label      TYPE string,
+           lv_color      TYPE string,
            lv_edges      TYPE string,
+           lv_type       type string,
            lt_attributes TYPE tpda_script_object_attribut_it.
 
     FIELD-SYMBOLS: <ls_attribute> LIKE LINE OF lt_attributes.
@@ -245,8 +248,23 @@ CLASS lcl_debugger_script IMPLEMENTATION.
       lv_label = |{ lv_label } \|<f{ sy-tabix }> {
         name( <ls_attribute>-name ) }\\{ c_newline }|.
       CONCATENATE iv_name '-' <ls_attribute>-name INTO lv_name.
+
+      CASE <ls_attribute>-acckind.
+        WHEN if_tpda_control=>ak_private.
+          lv_color = 'red'.
+          lv_type = 'private'.
+        WHEN if_tpda_control=>ak_protected.
+          lv_color = 'yellow'.
+          lv_type = 'protected'.
+        WHEN if_tpda_control=>ak_public.
+          lv_color = 'green'.
+          lv_type = 'public'.
+        WHEN OTHERS.
+          ASSERT 1 = 1 + 1.
+      ENDCASE.
       lv_edges = |{ lv_edges }"{ name( iv_name ) }":<f{ sy-tabix
-        }> -> "{ name( lv_name ) }";{ c_newline }|.
+        }> -> "{ name( lv_name ) }" [fontcolor={ lv_color
+        } label="{ lv_type }"];{ c_newline }|.
 
       handle( lv_name ).
     ENDLOOP.
