@@ -17,7 +17,7 @@ Install via [abapGit](https://github.com/larshp/abapGit)
 Alternatively graphviz can be installed locally: http://portableapps.com/node/38245
 
 Example from https://github.com/larshp/FORMfactor
-![image](https://cloud.githubusercontent.com/assets/5888506/9831830/9992cd50-5966-11e5-9ee5-383ad590a683.png)
+![go_class](https://cloud.githubusercontent.com/assets/5888506/9976449/051927b2-5ee5-11e5-945d-4665ba704895.png)
 
 Example from http://zevolving.com/2012/01/iterator-design-pattern-to-access-linked-list/
-![image](https://cloud.githubusercontent.com/assets/5888506/9835610/b9f6f188-59f3-11e5-8da6-d62e7cf4d4fe.png)
+![linked](https://cloud.githubusercontent.com/assets/5888506/9976450/051bf514-5ee5-11e5-9b20-51b6a9d472b6.png)
