@@ -59,7 +59,8 @@ CLASS lcl_debugger_script DEFINITION
       LIKE cl_abap_char_utilities=>newline
       VALUE cl_abap_char_utilities=>newline.
 
-    DATA: mv_graph TYPE string.
+    DATA: mt_visited TYPE TABLE OF string,
+          mv_graph   TYPE string.
 
     METHODS:
       popup
@@ -314,6 +315,7 @@ CLASS lcl_debugger_script IMPLEMENTATION.
         IF lv_name IS INITIAL.
           RETURN.
         ENDIF.
+        CLEAR mt_visited.
         handle( lv_name ).
         mv_graph = |digraph g \{{ c_newline
           }graph [{ c_newline
@@ -322,6 +324,8 @@ CLASS lcl_debugger_script IMPLEMENTATION.
           }{ mv_graph }{ c_newline
           }\}|.
         to_clipboard( ).
+      CATCH cx_tpda_varname.
+        MESSAGE 'Unknown variable'(006) TYPE 'I'.
       CATCH cx_tpda INTO lx_tpda.
         MESSAGE lx_tpda TYPE 'I'.
     ENDTRY.
@@ -333,6 +337,12 @@ CLASS lcl_debugger_script IMPLEMENTATION.
     DATA: ls_info  TYPE tpda_scr_quick_info,
           lo_descr TYPE REF TO cl_tpda_script_data_descr.
 
+
+    READ TABLE mt_visited FROM iv_name TRANSPORTING NO FIELDS.
+    IF sy-subrc = 0.
+      RETURN.
+    ENDIF.
+    APPEND iv_name TO mt_visited.
 
     lo_descr = cl_tpda_script_data_descr=>factory( iv_name ).
     ls_info = cl_tpda_script_data_descr=>get_quick_info( iv_name ).

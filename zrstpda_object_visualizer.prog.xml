@@ -64,6 +64,12 @@
    <LENGTH>23 </LENGTH>
   </TEXTPOOL>
   <TEXTPOOL>
+   <ID>I</ID>
+   <KEY>006</KEY>
+   <ENTRY>Unknown variable</ENTRY>
+   <LENGTH>26 </LENGTH>
+  </TEXTPOOL>
+  <TEXTPOOL>
    <ID>R</ID>
    <KEY></KEY>
    <ENTRY>ABAP Object Visualizer</ENTRY>
