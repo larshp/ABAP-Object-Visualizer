@@ -14,7 +14,7 @@ Install via [abapGit](https://github.com/larshp/abapGit)
 6. Enter object variable name
 7. Paste clipboard to http://www.webgraphviz.com/ and click "Generate Graph!"
 
-Alternatively graphviz can be installed locally: http://portableapps.com/node/38245
+Graphviz can also be installed locally: http://portableapps.com/node/38245
 
 Example from https://github.com/larshp/FORMfactor
 ![go_class](https://cloud.githubusercontent.com/assets/5888506/9976449/051927b2-5ee5-11e5-945d-4665ba704895.png)
