@@ -5,32 +5,11 @@
    <PROGDIR>
     <NAME>ZRSTPDA_OBJECT_VISUALIZER</NAME>
     <STATE>A</STATE>
-    <SQLX/>
-    <EDTX/>
     <VARCL>X</VARCL>
     <DBAPL>S</DBAPL>
-    <DBNA/>
-    <CLAS/>
-    <TYPE/>
-    <OCCURS/>
     <SUBC>S</SUBC>
     <APPL>X</APPL>
-    <SECU/>
-    <CNAM/>
-    <CDAT>0000-00-00</CDAT>
-    <UNAM/>
-    <UDAT>0000-00-00</UDAT>
-    <VERN/>
-    <LEVL/>
-    <RSTAT/>
-    <RMAND/>
-    <RLOAD/>
     <FIXPT>X</FIXPT>
-    <SSET/>
-    <SDATE>0000-00-00</SDATE>
-    <STIME/>
-    <IDATE>0000-00-00</IDATE>
-    <ITIME/>
     <LDBNAME>D$S</LDBNAME>
     <UCCHECK>X</UCCHECK>
    </PROGDIR>
@@ -40,49 +19,41 @@
      <KEY>001</KEY>
      <ENTRY>Table</ENTRY>
      <LENGTH>15</LENGTH>
-     <SPLIT/>
     </item>
     <item>
      <ID>I</ID>
      <KEY>002</KEY>
      <ENTRY>Object</ENTRY>
      <LENGTH>16</LENGTH>
-     <SPLIT/>
     </item>
     <item>
      <ID>I</ID>
      <KEY>003</KEY>
      <ENTRY>Exported to clipboard</ENTRY>
      <LENGTH>42</LENGTH>
-     <SPLIT/>
     </item>
     <item>
      <ID>I</ID>
      <KEY>004</KEY>
      <ENTRY>Structure</ENTRY>
      <LENGTH>19</LENGTH>
-     <SPLIT/>
     </item>
     <item>
      <ID>I</ID>
      <KEY>005</KEY>
      <ENTRY>Choose object</ENTRY>
      <LENGTH>23</LENGTH>
-     <SPLIT/>
     </item>
     <item>
      <ID>I</ID>
      <KEY>006</KEY>
      <ENTRY>Unknown variable</ENTRY>
      <LENGTH>26</LENGTH>
-     <SPLIT/>
     </item>
     <item>
      <ID>R</ID>
-     <KEY/>
      <ENTRY>ABAP Object Visualizer</ENTRY>
      <LENGTH>22</LENGTH>
-     <SPLIT/>
     </item>
    </TPOOL>
   </asx:values>
