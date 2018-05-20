@@ -1,4 +1,4 @@
-[![abaplint](http://abaplint.org/badges/larshp/ABAP-Object-Visualizer)](http://abaplint.org/project/larshp/ABAP-Object-Visualizer)
+[![abaplint](https://abaplint.org/badges/larshp/ABAP-Object-Visualizer)](https://abaplint.org/project/larshp/ABAP-Object-Visualizer)
 
 # ABAP-Object-Visualizer
 
