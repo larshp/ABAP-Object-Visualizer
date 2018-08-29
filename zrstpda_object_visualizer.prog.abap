@@ -92,6 +92,11 @@ CLASS lcl_debugger_script DEFINITION
         IMPORTING iv_name  TYPE string
                   io_descr TYPE REF TO cl_tpda_script_data_descr
         RAISING   cx_tpda,
+      handle_dataref
+        IMPORTING !iv_name TYPE string
+                  io_descr TYPE REF TO cl_tpda_script_data_descr
+      raising
+        cx_tpda ,
       handle
         IMPORTING iv_name TYPE string
         RAISING   cx_tpda.
@@ -165,7 +170,8 @@ CLASS lcl_debugger_script IMPLEMENTATION.
           lv_edges      TYPE string,
           lv_name       TYPE string,
           lt_components TYPE tpda_script_struc_componentsit,
-          lo_struct     TYPE REF TO cl_tpda_script_structdescr.
+          lo_struct     TYPE REF TO cl_tpda_script_structdescr,
+          lv_match_offset type i.
 
     FIELD-SYMBOLS: <ls_component> LIKE LINE OF lt_components.
 
@@ -173,12 +179,17 @@ CLASS lcl_debugger_script IMPLEMENTATION.
     lo_struct ?= io_descr.
 
     lo_struct->components( IMPORTING p_components_it = lt_components ).
+    FIND REGEX '\*$' in iv_name MATCH OFFSET lv_match_offset.
 
     lv_label = 'Structure'(004).
     LOOP AT lt_components ASSIGNING <ls_component>.
       lv_label = |{ lv_label } \|<f{ sy-tabix }> {
         name( <ls_component>-compname ) }\\{ c_newline }|.
-      CONCATENATE iv_name '-' <ls_component>-compname INTO lv_name.
+      IF lv_match_offset = 0.
+        lv_name = |{ iv_name }-{ <ls_component>-compname }|.
+      ELSE.
+        lv_name = |{ iv_name(lv_match_offset) }{ <ls_component>-compname }|.
+      ENDIF.
       lv_edges = |{ lv_edges }"{ name( iv_name ) }":<f{ sy-tabix
         }> -> "{ name( lv_name ) }";{ c_newline }|.
 
@@ -322,6 +333,27 @@ CLASS lcl_debugger_script IMPLEMENTATION.
 
   ENDMETHOD.
 
+  method handle_dataref.
+    DATA: ls_info TYPE tpda_scr_quick_info.
+
+    FIELD-SYMBOLS: <ls_symobjref> TYPE tpda_sys_symbdatref.
+
+    ls_info = cl_tpda_script_data_descr=>get_quick_info( iv_name ).
+    ASSIGN ls_info-quickdata->* TO <ls_symobjref>.
+
+    FIND REGEX '^\{[A-Z]:initial\}$' in <ls_symobjref>-instancename IGNORING CASE.
+    IF sy-subrc <> 0.
+      handle( <ls_symobjref>-instancename ).
+    ENDIF.
+
+    mv_graph = |{ mv_graph }"{ name( iv_name ) }" [{ c_newline
+      }label = "ref"{ c_newline
+      }shape = "record" ];{ c_newline
+      }"{ name( iv_name ) }" -> "{ name( <ls_symobjref>-instancename ) }";{ c_newline }|.
+
+
+  ENDMETHOD.
+
   METHOD script.
 
     DATA: lv_name TYPE string,
@@ -355,6 +387,7 @@ CLASS lcl_debugger_script IMPLEMENTATION.
     DATA: ls_info  TYPE tpda_scr_quick_info,
           lo_descr TYPE REF TO cl_tpda_script_data_descr.
 
+      try.
 
     READ TABLE mt_visited FROM iv_name TRANSPORTING NO FIELDS.
     IF sy-subrc = 0.
@@ -379,14 +412,17 @@ CLASS lcl_debugger_script IMPLEMENTATION.
         handle_tab( iv_name  = iv_name
                     io_descr = lo_descr ).
       WHEN cl_tpda_script_data_descr=>mt_datref.
-* to be implemented
-        ASSERT 1 = 1 + 1.
+        handle_dataref( iv_name  = iv_name
+                        io_descr = lo_descr ).
       WHEN cl_tpda_script_data_descr=>mt_object.
         handle_object( iv_name  = iv_name
                        io_descr = lo_descr ).
       WHEN cl_tpda_script_data_descr=>mt_objref.
         handle_objref( iv_name ).
     ENDCASE.
+      catch cx_root.
+        assert 1 = 1 + 1.
+      endtry.
 
   ENDMETHOD.                    "script
 
