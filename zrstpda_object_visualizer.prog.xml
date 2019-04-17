@@ -4,8 +4,6 @@
   <asx:values>
    <PROGDIR>
     <NAME>ZRSTPDA_OBJECT_VISUALIZER</NAME>
-    <STATE>A</STATE>
-    <VARCL>X</VARCL>
     <DBAPL>S</DBAPL>
     <SUBC>S</SUBC>
     <APPL>X</APPL>
