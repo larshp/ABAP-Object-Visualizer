@@ -1,5 +1,3 @@
-[![abaplint](https://abaplint.org/badges/larshp/ABAP-Object-Visualizer)](https://abaplint.org/project/larshp/ABAP-Object-Visualizer)
-
 # ABAP-Object-Visualizer
 
 Visualize complex object hierarchies in ABAP via [graphviz](http://www.graphviz.org/)
